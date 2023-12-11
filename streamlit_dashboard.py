@@ -20,7 +20,7 @@ sns.set_style('darkgrid')
 ax = sns.barplot(data = total_categoria, x = 'Categoria', y = 'Valor')
 ax.figure.set_size_inches(12,6)
 ax.set_title('Valor total por categoria', loc='left', fontsize=18)
-ax.set_xlabel('Categoria', fontsize=14)
+# ax.set_xlabel('Categoria', fontsize=14)
 ax.set_ylabel('Valor total (R$)', fontsize=14)
 st.pyplot(ax.get_figure())
 
