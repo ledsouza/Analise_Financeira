@@ -36,11 +36,11 @@ economizado = ((guardar/valor_disponivel)*100).values[0]
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.metric('Valor economizado (%)', round(economizado, 2))
+    st.metric('Valor economizado', f'{economizado:.2f}%'.replace('.', ','))
 with col2:
-    st.metric('Custos fixos (%)', round((custos_fixos/valor_disponivel).values[0]*100, 2))
+    st.metric('Custos fixos', f'{(custos_fixos/valor_disponivel).values[0]*100:.2f}%'.replace('.', ','))
 with col3:
-    st.metric('Custos de lazer (%)', round((custos_lazer/valor_disponivel)*100, 2))
+    st.metric('Custos de lazer', f'{(custos_lazer/valor_disponivel)*100:.2f}%'.replace('.', ','))
 
 # Métricas dos custos médios para subcategorias relevantes
 mask = ((df['Descrição'] == 'Uber') | (df['Descrição'] == '99POP')) & ((df['Valor'] > 25) | (df['Valor'] < 15))
@@ -48,13 +48,13 @@ df_transporte_trabalho = df[~mask]
 media_categoria = df_transporte_trabalho[['Valor', 'Descrição']].groupby('Descrição').mean()
 categorias_desejadas = ['Almoço', 'Jantar', 'Café', '99POP', 'Uber']
 categorias_presentes = media_categoria.index.isin(categorias_desejadas)
-media_categoria = media_categoria[categorias_presentes].round(2).T
+media_categoria = media_categoria[categorias_presentes].T.style.format('R${:.2f}', decimal= ',')
 
 table1, table2 = st.columns(2)
 with table1:
     'Tabela de dados completa'
-    st.dataframe(df[['Valor', 'Descrição', 'Categoria']], use_container_width = True, hide_index = True)
+    st.dataframe(df[['Valor', 'Descrição', 'Categoria']].style.format({'Valor': 'R${:.2f}'}, decimal = ','), use_container_width = True, hide_index = True)
 with table2:
-    'Custos médios por subcategoria'
+    'Custo médio por subcategoria'
     st.dataframe(media_categoria, use_container_width = True)
     st.image('Spending_Plan.png')
