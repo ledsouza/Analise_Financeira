@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import plotly.express as px
 from matplotlib import pyplot as plt
 import streamlit as st
 
@@ -15,14 +16,11 @@ df = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[:, 10:14]
 # Plot do gráfico de barras das categorias de custos
 total_categoria = df[['Valor', 'Categoria']].groupby('Categoria')
 total_categoria = total_categoria.sum().sort_values('Valor', ascending=False)
-sns.set_palette('deep')
-sns.set_style('darkgrid')
-ax = sns.barplot(data = total_categoria, x = 'Categoria', y = 'Valor')
-ax.figure.set_size_inches(12,6)
-ax.set_title('Valor total por categoria', loc='left', fontsize=18)
-ax.set_xlabel('')
-ax.set_ylabel('Valor total (R$)', fontsize=14)
-st.pyplot(ax.get_figure())
+
+fig = px.bar(total_categoria.reset_index(), x='Categoria', y='Valor', title = 'Valor total por categoria', 
+             labels={'Categoria': '', 'Valor': 'Valor total (R$)'}, color = 'Categoria', color_discrete_sequence=['#3498DB'])
+fig.update_layout(showlegend=False)
+st.plotly_chart(fig, use_container_width=True)
 
 # Análise da proporção de gastos
 valor_disponivel = 3649.92
