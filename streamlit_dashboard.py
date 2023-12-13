@@ -11,14 +11,8 @@ sheet_id = '1quM2SQCyXHGd5zPc3y46FYjql_VoOQUqqwRtF9Ws0Xg'
 url = f'https://docs.google.com/spreadsheet/ccc?key={sheet_id}&output=xlsx'
 df = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[:, 10:14]
 
-# Plot do gráfico de barras das categorias de custos
 total_categoria = df[['Valor', 'Categoria']].groupby('Categoria')
 total_categoria = total_categoria.sum().sort_values('Valor', ascending=False)
-
-fig = px.bar(total_categoria.reset_index(), x='Categoria', y='Valor', title = 'Valor total por categoria', 
-             labels={'Categoria': '', 'Valor': 'Valor total (R$)'}, color = 'Categoria', color_discrete_sequence=['#3498DB'])
-fig.update_layout(showlegend=False)
-st.plotly_chart(fig, use_container_width=True)
 
 # Análise da proporção de gastos
 valor_disponivel = 3649.92
@@ -26,17 +20,27 @@ categorias = set(total_categoria.index)
 categoria_lazer = set(['Pessoal']) & categorias
 categorias_fixas = categorias - categoria_lazer
 custos_fixos = total_categoria.loc[list(categorias_fixas)].sum()
+proporcao_custos_fixos = (custos_fixos/valor_disponivel).values[0]*100
 custos_lazer = total_categoria.loc[list(categoria_lazer)].sum().values[0]
-guardar = valor_disponivel - (custos_fixos + custos_lazer)
-economizado = ((guardar/valor_disponivel)*100).values[0]
+proporcao_custos_lazer = (custos_lazer/valor_disponivel)*100
+guardar = valor_disponivel - (custos_fixos + custos_lazer).values[0]
+economizado = ((guardar/valor_disponivel)*100)
 
-col1, col2, col3 = st.columns(3)
+st.markdown("<br>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns([0.41, 0.40, 0.19])
 with col1:
     st.metric('Valor economizado', f'{economizado:.2f}%'.replace('.', ','))
 with col2:
-    st.metric('Custos fixos', f'{(custos_fixos/valor_disponivel).values[0]*100:.2f}%'.replace('.', ','))
+    st.metric('Custos fixos', f'{proporcao_custos_fixos:.2f}%'.replace('.', ','))
 with col3:
-    st.metric('Custos de lazer', f'{(custos_lazer/valor_disponivel)*100:.2f}%'.replace('.', ','))
+    st.metric('Custos de lazer', f'{proporcao_custos_lazer:.2f}%'.replace('.', ','))
+
+# Plot do gráfico de barras das categorias de custos
+fig = px.bar(total_categoria.reset_index(), x='Categoria', y='Valor', title = 'Valor total por categoria', 
+             labels={'Categoria': '', 'Valor': 'Valor total (R$)'}, color = 'Categoria', color_discrete_sequence=['#3498DB'])
+fig.update_layout(showlegend=False)
+st.plotly_chart(fig, use_container_width=True)
 
 # Métricas dos custos médios para subcategorias relevantes
 mask = ((df['Descrição'] == 'Uber') | (df['Descrição'] == '99POP')) & ((df['Valor'] > 25) | (df['Valor'] < 15))
