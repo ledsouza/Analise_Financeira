@@ -1,7 +1,5 @@
 import pandas as pd
-import seaborn as sns
 import plotly.express as px
-from matplotlib import pyplot as plt
 import streamlit as st
 
 st.set_page_config(page_title = 'Análise Financeira Mensal', layout = 'centered', page_icon = "heavy_dollar_sign")
