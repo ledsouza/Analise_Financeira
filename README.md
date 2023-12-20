@@ -5,7 +5,7 @@ Criar uma dashboard de análise financeira mensal
 | :books: Vitrine.Dev |     |
 | -------------  | --- |
 | :sparkles: Nome        | **Análise Financeira**
-| :label: Tecnologias | Python (streamlit, pandas, pyplot)
+| :label: Tecnologias | Python, streamlit, pandas, pyplot
 | :rocket: URL         | ledsouza-dashboard-financeiro.streamlit.app
 
 <!-- Inserir imagem com a #vitrinedev ao final do link -->
