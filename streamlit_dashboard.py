@@ -6,8 +6,13 @@ st.set_page_config(page_title = 'Análise Financeira Mensal', layout = 'centered
 
 # Carregamento dos dados
 months = ('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro')
-sheet_name = st.selectbox('Mês', months)
-sheet_id = '1quM2SQCyXHGd5zPc3y46FYjql_VoOQUqqwRtF9Ws0Xg'
+years = {'2023': '1quM2SQCyXHGd5zPc3y46FYjql_VoOQUqqwRtF9Ws0Xg', '2024': '1M-UIHenSns7o_iSTODK047YOO3Hh-nLS9DLaLvmwU7g'}
+col1, col2 = st.columns(2)
+with col1:
+    sheet_name = st.selectbox('Mês', months)
+with col2:
+    year = st.selectbox('Ano', tuple(years.keys()))
+    sheet_id = years[year]
 url = f'https://docs.google.com/spreadsheet/ccc?key={sheet_id}&output=xlsx'
 df = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[:, 10:14]
 
