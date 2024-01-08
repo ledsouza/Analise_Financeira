@@ -19,6 +19,8 @@ df = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[:, 10:14]
 total_categoria = df[['Valor', 'Categoria']].groupby('Categoria')
 total_categoria = total_categoria.sum().sort_values('Valor', ascending=False)
 
+total_categoria['Proporcao'] = total_categoria['Valor'] / total_categoria['Valor'].sum() * 100
+
 # Análise da proporção de gastos
 valor_disponivel = 3649.92
 categorias = set(total_categoria.index)
@@ -42,9 +44,19 @@ with col3:
     st.metric('Custos de lazer', f'{proporcao_custos_lazer:.2f}%'.replace('.', ','))
 
 # Plot do gráfico de barras das categorias de custos
-fig = px.bar(total_categoria.reset_index(), x='Categoria', y='Valor', title = 'Valor total por categoria', 
-             labels={'Categoria': '', 'Valor': 'Valor total (R$)'}, color = 'Categoria', color_discrete_sequence=['#3498DB'])
-fig.update_layout(showlegend=False)
+fig = px.bar(total_categoria.reset_index(), 
+             x='Categoria', 
+             y='Valor', 
+             title = 'Valor total por categoria', 
+             labels={'Categoria': '', 'Valor': 'Valor total (R$)'},
+             text_auto=True, 
+             color = 'Categoria', 
+             color_discrete_sequence=['#3498DB'])
+
+# Adiciona o formato desejado para os valores de y e remove os valores no eixo y
+fig.update_traces(texttemplate='R$%{y:.0f}', textposition='outside', hoverinfo='none', hovertemplate=None)
+fig.update_layout(showlegend=False, yaxis=dict(title='', tickvals=[]))
+
 st.plotly_chart(fig, use_container_width=True)
 
 # Métricas dos custos médios para subcategorias relevantes
