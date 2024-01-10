@@ -38,13 +38,18 @@ economizado = ((guardar/valor_disponivel)*100)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([0.41, 0.40, 0.19])
+col1, col2, col3 = st.columns([0.465, 0.445, 0.09])  # Adjust column widths
+
 with col1:
     st.metric('Valor economizado', f'{economizado:.2f}%'.replace('.', ','))
+
 with col2:
     st.metric('Custos fixos', f'{proporcao_custos_fixos:.2f}%'.replace('.', ','))
+
 with col3:
     st.metric('Custos de lazer', f'{proporcao_custos_lazer:.2f}%'.replace('.', ','))
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 # Plot do gráfico de barras das categorias de custos
 fig = px.bar(total_categoria.reset_index(), 
