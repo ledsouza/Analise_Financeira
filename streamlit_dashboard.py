@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.set_page_config(page_title = 'Análise Financeira Mensal', layout = 'centered', page_icon = "heavy_dollar_sign")
+st.set_page_config(page_title = 'Análise Financeira Mensal', layout = 'wide', page_icon = "heavy_dollar_sign")
 
 # Carregamento dos dados
 months = ('Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro')
@@ -15,6 +15,9 @@ with col2:
     sheet_id = years[year]
 url = f'https://docs.google.com/spreadsheet/ccc?key={sheet_id}&output=xlsx'
 df = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[:, 10:14]
+planejado_real = pd.read_excel(url, sheet_name=sheet_name, header=2).iloc[0:7, 0:3]
+planejado_real.set_index(planejado_real.columns[0], inplace=True)
+planejado_real.index.name = 'Categorias'
 
 total_categoria = df[['Valor', 'Categoria']].groupby('Categoria')
 total_categoria = total_categoria.sum().sort_values('Valor', ascending=False)
@@ -54,13 +57,20 @@ fig = px.bar(total_categoria.reset_index(),
              color_discrete_sequence=['#3498DB'])
 
 # Adiciona o formato desejado para os valores de y e remove os valores no eixo y
-fig.update_traces(texttemplate='R$%{y:.0f}', textposition='outside', hoverinfo='none', hovertemplate=None)
+fig.update_traces(texttemplate='R$%{y:.0f}', 
+                  textposition='outside', 
+                  hovertemplate='')
 fig.update_layout(showlegend=False, yaxis=dict(title='', tickvals=[]))
 
-st.plotly_chart(fig, use_container_width=True)
+col1, col2 = st.columns(2)
+with col1:
+    st.plotly_chart(fig, use_container_width=True)
+with col2:
+    st.markdown("<div style='margin-top: 35px;'><b>Planejado vs Realizado<br></div><br>", unsafe_allow_html=True)
+    st.dataframe(planejado_real, use_container_width=True)
 
 # Métricas dos custos médios para subcategorias relevantes
-mask = ((df['Descrição'] == 'Uber') | (df['Descrição'] == '99POP')) & ((df['Valor'] > 25) | (df['Valor'] < 15))
+mask = ((df['Descrição'] == 'Uber') | (df['Descrição'] == '99POP')) & ((df['Valor'] > 25) | (df['Valor'] < 14))
 df_transporte_trabalho = df[~mask]
 media_categoria = df_transporte_trabalho[['Valor', 'Descrição']].groupby('Descrição').mean()
 categorias_desejadas = ['Almoço', 'Jantar', 'Café', '99POP', 'Uber']
@@ -69,9 +79,12 @@ media_categoria = media_categoria[categorias_presentes].T.style.format('R${:.2f}
 
 table1, table2 = st.columns(2)
 with table1:
-    'Tabela de dados completa'
-    st.dataframe(df[['Valor', 'Descrição', 'Categoria']].style.format({'Valor': 'R${:.2f}'}, decimal = ','), use_container_width = True, hide_index = True)
+    st.markdown('<b>Tabela de dados completa', unsafe_allow_html=True)
+    st.dataframe(df[['Valor', 'Descrição', 'Categoria']].style.format({'Valor': 'R${:.2f}'}, decimal = ','), 
+                 use_container_width = True, 
+                 hide_index = True, 
+                 height = 750)
 with table2:
-    'Custo médio por subcategoria'
+    st.markdown('<b>Custo médio por subcategoria', unsafe_allow_html=True)
     st.dataframe(media_categoria, use_container_width = True)
     st.image('Spending_Plan.png')
