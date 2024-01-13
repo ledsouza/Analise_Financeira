@@ -86,6 +86,8 @@ with col2:
     def highlight_red(row):
         if row['Realizado'] > row['Planejado']:
             return ['', 'color: red']
+        elif int(row['Realizado']) == int(row['Planejado']):
+            return [''] * len(row)
         else:
             return ['', 'color: green']
 
