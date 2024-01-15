@@ -47,7 +47,7 @@ economizado = ((guardar/valor_disponivel)*100)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([0.3, 0.3, 2])  # Ajustar larguras das colunas
+col1, col2, col3 = st.columns([0.4, 0.4, 2])  # Ajustar larguras das colunas
 
 with col1:
     st.metric('Valor economizado', f'{economizado:.2f}%'.replace('.', ','))
